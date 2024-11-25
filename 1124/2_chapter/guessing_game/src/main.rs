@@ -2,9 +2,28 @@
 // 프렐루드: 기본적으로 러스트는 모든 프로그램의 스코프로 가져오는 표준 라이브러리에 정의된 아이템 집합을 가지고 있습니다. 이 집합을
 // https://doc.rust-lang.org/std/prelude/index.html
 use std::io;
+// Rng는 난수 생성기를 구현한 메서드들을 정의한 트레이트 (trait) 며 해당 
+// 메서드들을 이용하기 위해서는 반드시 스코프 내에 있어야 합니다
+use rand::Rng;
 
+use std::cmp::Ordering;
 fn main() {
     println!("Guess the number!");
+
+    /* 
+        thread_rng()
+            특정 난수 생성기를 제공
+        gen_range()
+            스코프로 가져온 Rng 트레이트에 정의
+            메서드는 범위 표현식을 인수로 받아서 해당 범위 내 임의의 숫자를 생성
+            범위 표기법
+                ..
+                ..=
+                start..end
+                start..=end
+    */
+    let secret_number = rand::thread_rng().gen_range(1..=100);
+    println!("The secret number is: {secret_number}");
 
     println!("Please input your guess.");
  
@@ -40,6 +59,14 @@ fn main() {
     io::stdin().read_line(&mut guess).expect("Failed to read line");
 
     /* 
+        shadow
+        동일한 이름의 변수를 다시 선언하여 기존 변수를 "덮어씌우는" 기능
+        기존 변수의 값을 새로 계산하거나 타입을 변경하면서 새로운 변수를 생성
+        Rust의 기본 변수는 immutable(불변)로 선언되지만, Shadowing을 통해 기존 변수의 값을 "변경"한 것처럼 동작할 수 있습니다
+    */
+    let guess: u32 = guess.trim().parse().expect("Please type a numver");
+
+    /* 
         자리 표시자 (placeholder)
             어떤 변수의 값을 출력할 때라면 해당 변수 이름을 이 중괄호 안에 넣을 수 있습니다
             빈 중괄호를 형식 문자열에 위치시키고, 그 뒤에 쉼표로 구분된 표현식
@@ -47,7 +74,15 @@ fn main() {
                 let y = 6;
                 println!("x = {x}, y + 3  = {}", y +3);
     */
-    println!("You guesseg: {guess}");
+    println!("You guesseg: {guess}!");
+
+    // 비밀 번호 생성 하기
+    // rand crate 사용 
+    match guess.cmp(&secret_number) {
+        Ordering::Less => println!("Too small!"),
+        Ordering::Greater => println!("Too big!"),
+        Ordering::Equal => println!("Too win!"),
+    }
 
 
 
